@@ -44,22 +44,22 @@ class PocketAPI(object):
         self.access_token = response_js['access_token']
         self.username = response_js['username']
 
-    def add(self, url, title=None, tags=None, tweet_id=None):
+    def add(self, url, title=None, tags=None, tweet_id=None, **kwargs):
         """See http://getpocket.com/developer/docs/v3/add"""
-        r = self._post('v3/add', json=dict(url=url, title=title, tags=tags, tweet_id=tweet_id))
-        print r.json()
-        pass
+        r = self._post('v3/add', json=dict(url=url, title=title,
+                                           tags=tags, tweet_id=tweet_id), **kwargs)
+        return r.json()
 
-    def get(self, **kwargs):
+    def get(self, params, **kwargs):
         """See http://getpocket.com/developer/docs/v3/retrieve"""
-        r = self._post('v3/get', json=kwargs)
-        print r.json()
+        r = self._post('v3/get', json=params, **kwargs)
+        return r.json()
 
-    def send(self, actions):
+    def send(self, actions, **kwargs):
         """See http://getpocket.com/developer/docs/v3/modify"""
         assert isinstance(actions, list)
-        r = self._post('v3/send', json=actions)
-        print r.json()
+        r = self._post('v3/send', json=dict(actions=actions), **kwargs)
+        return r.json()
 
 
 def get_temp_path(name):
@@ -91,4 +91,4 @@ def create_pocket_from_cache(consumer_key=None, cache_key_path=None):
 
 if __name__ == '__main__':
     p = create_pocket_from_cache()
-    print p.get(count=10)
+    print p.get(dict(count=10))

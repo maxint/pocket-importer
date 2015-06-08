@@ -2,10 +2,10 @@
 
 Python API for [getpocket.com](http://getpocket.com) and its importer of official exported read-it-later list. 
 
-
-# Dependencies
-
-- requests
+# Installation
+```shell
+pip install git+git://github.com/maxint/pocket-importer
+```
 
 
 # Usage
@@ -13,3 +13,8 @@ Python API for [getpocket.com](http://getpocket.com) and its importer of officia
 ```shell
 python2 importer.py ril_export.html
 ```
+
+
+# Dependencies
+
+- requests

@@ -14,16 +14,17 @@ def parse_list(content):
     return results
 
 
-def batch_do(p, actions, action, **kwargs):
-    """:type p: pocket.PocketAPI"""
+def batch_do(p, actions, action):
+    """:type p: pocket.Pocket"""
+    print 'Batch %s (num=%d) ...' % (action, len(actions))
     for d in actions:
         d['action'] = action
-    r = p.send(actions, **kwargs)
+    r = p.send(actions).json()
     assert r['status'] == 1, 'Batch operation ({}) failed'.format(action)
     return r
 
 
-def main(fp):
+def main_do(fp):
     """:type fp: file"""
     c = fp.read()
     m = re.findall(r'<ul>([\s\S\r\n]+?)</ul>', c, re.IGNORECASE | re.MULTILINE)
@@ -33,17 +34,22 @@ def main(fp):
 
     batch_do(p, parse_list(m[0]), action='add')
     if len(m) > 1:
-        r = batch_do(p, parse_list(m[1]), action='add', timeout=3)
+        r = batch_do(p, parse_list(m[1]), action='add')
         actions = [dict(item_id=d['item_id'], time=d.get('time_added')) for d in r['action_results']]
-        batch_do(p, actions, action='archive', timeout=3)
+        batch_do(p, actions, action='archive')
+
+    print 'Done!'
 
 
-if __name__ == '__main__':
+def main():
     import argparse
 
     parser = argparse.ArgumentParser(description='Import official exported list from getpocket.com')
     parser.add_argument('file', type=argparse.FileType('r'),
                         help='Target HTML file to be imported')
-
     args = parser.parse_args()
-    main(args.file)
+    main_do(args.file)
+
+
+if __name__ == '__main__':
+    main()
